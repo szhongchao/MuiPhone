@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<link rel="stylesheet" href="../css/mui.min.css">
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a id="back" class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 id="list-title" class="mui-title">列表信息</h1>
+		</header>
+		<div class="mui-content"></div>
+	</body>
+	<script src="../js/mui.min.js"></script>
+	<script src="../js/app.js"></script>
+	<script type="text/javascript">
+		(function($) {
+			//启用双击监听
+			mui.plusReady(function(){
+				var self = plus.webview.currentWebview();
+				var liId = self.liId;
+				switch (liId){
+					case 'reported':
+						(document.getElementById("list-title")).innerHTML = "报修列表";
+						uri = 'report/queryReport_result';
+						urlInfoId = 'report-info';
+						list = 'reportInfo';
+						state = '2401';
+						break;
+					case 'checked':
+						(document.getElementById("list-title")).innerHTML = "审核列表";
+						uri = 'report/queryReport_result';
+						urlInfoId = 'report-info';
+						list = 'reportInfo';
+						state = '2402'
+						break;
+					case 'checkFail':
+						(document.getElementById("list-title")).innerHTML = "审核列表";
+						uri = 'report/queryReport_result';
+						urlInfoId = 'report-info';
+						list = 'reportInfo';
+						state = '2403'
+						break;
+					case 'prorepairing':
+						(document.getElementById("list-title")).innerHTML = "维修中";
+						uri = 'report/queryReport_result';
+						urlInfoId = 'report-info';
+						list = 'reportInfo';
+						state = '2404'
+						break;
+					case 'toCreate':
+						(document.getElementById("list-title")).innerHTML = "分配任务";
+						uri ='repair/queryRepair_result';
+						urlInfoId = 'create-info';
+						list = 'repairInfo';
+						state = '2402'
+						break;
+					case 'viewtask':
+						(document.getElementById("list-title")).innerHTML = "查看任务";
+						uri ='repair/queryRepair_result';
+						urlInfoId = 'repair-info';
+						list = 'repairInfo';
+						state = '2404';
+						break;
+					case 'toRepair':
+						(document.getElementById("list-title")).innerHTML = "待完成";
+						uri ='repair/queryRepair_result';
+						urlInfoId = 'repair-info';
+						list = 'repairInfo';
+						state = '2409';
+						break;
+					case 'repairing':
+						(document.getElementById("list-title")).innerHTML = "进行中";
+						uri ='repair/queryRepair_result';
+						urlInfoId = 'repair-info';
+						list = 'repairInfo';
+						state = '2405';
+						break;
+					case 'repaired':
+						(document.getElementById("list-title")).innerHTML = "维修成功";
+						uri ='repair/queryRepair_result';
+						urlInfoId = 'repair-info';
+						list = 'repairInfo';
+						state = '2406';
+						break;
+					case 'repairFail':
+						(document.getElementById("list-title")).innerHTML = "维修失败";
+						uri ='repair/queryRepair_result';
+						urlInfoId = 'repair-info';
+						list = 'repairInfo';
+						state = '2407';
+						break;
+					case 'taskSuccess':
+						(document.getElementById("list-title")).innerHTML = "任务成功";
+						uri ='maintain/queryMaintain_result';
+						urlInfoId = 'maintain-info';
+						list = 'maintainInfo';
+						state = '24081';
+						break;
+					case 'taskFail':
+						(document.getElementById("list-title")).innerHTML = "任务失败";
+						uri ='maintain/queryMaintain_result';
+						urlInfoId = 'maintain-info';
+						list = 'maintainInfo';
+						state = '24082';			
+						break;
+					default:
+						(document.getElementById("list-title")).innerHTML = "数据测试";
+						uri ='ajax';
+						urlInfoId = 'ajax';
+						list = '';
+						state = ''
+						$.openWindow({
+						    id:'ajax',
+						    url:'ajax.html',
+						    
+						  });
+							
+						
+						break;
+				}
+				mui.init({
+					gestureConfig:{
+						doubletap:true
+					},
+					subpages:[{
+						id:'task-list',
+						url:'task-list.html',
+						styles:{
+							top: '45px',
+							bottom: '0px',
+						},
+						extras:{
+					       state:state,
+					       uri:uri,
+					       urlInfoId:urlInfoId,
+					       list:list,
+					    }
+					}]
+				});
+				
+			});	
+			var contentWebview = null;
+			document.querySelector('header').addEventListener('doubletap',function () {
+				if(contentWebview==null){
+					contentWebview = plus.webview.currentWebview().children()[0];
+				}
+				contentWebview.evalJS("mui('#pullrefresh').pullRefresh().scrollTo(0,0,100)");
+			});
+		})(mui);
+	</script>
+
+</html>

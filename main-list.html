@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Hello MUI</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<!--标准mui.css-->
+		<link rel="stylesheet" href="css/mui.min.css">
+		<!--App自定义的css-->
+		<link rel="stylesheet" type="text/css" href="css/app.css"/>
+		<style>
+			.title{
+				margin: 20px 15px 7px;
+				color: #6d6d72;
+				font-size: 15px;
+			}
+			
+		</style>
+	</head>
+	<body>
+		
+		<div class="mui-content">
+			
+			<div id="report" class="title report">
+				进行中
+			</div>
+			<ul id="reportUl" class="mui-table-view report">
+				<li id="reported" class="mui-table-view-cell">
+					<a  class="mui-navigate-right">
+						已报修
+					</a>
+				</li>
+				<li id="checked" class="mui-table-view-cell">
+					<a  class="mui-navigate-right">
+						审核通过
+					</a>
+				</li>
+				<li id="checkFail" class="mui-table-view-cell test02">
+					<a class="mui-navigate-right">
+						审核未通过
+					</a>
+				</li>
+				<li id="prorepairing"class="mui-table-view-cell">
+					<a class="mui-navigate-right">
+						维修中
+					</a>
+				</li>
+			</ul>
+			<div id="repair" class="title">
+				维修工作
+			</div>
+			<ul id="repairUl" class="mui-table-view test01">
+				<li id="toCreate" class="mui-table-view-cell">
+					<a  class="mui-navigate-right">
+						分配任务
+					</a>
+				</li>
+				<li id="viewtask" class="mui-table-view-cell">
+					<a  class="mui-navigate-right">
+						查看任务
+					</a>
+				</li>
+				<li id="toRepair" class="mui-table-view-cell">
+					<a  class="mui-navigate-right">
+						待完成
+					</a>
+				</li>
+				<li id="repairing" class="mui-table-view-cell">
+					<a class="mui-navigate-right">
+						进行中
+					</a>
+				</li>
+				<li id="repaired" class="mui-table-view-cell">
+					<a  class="mui-navigate-right">
+						维修成功
+					</a>
+				</li>
+				<li id="repairFail" class="mui-table-view-cell">
+					<a  class="mui-navigate-right">
+						维修失败
+					</a>
+				</li>
+			</ul>
+		    <div id="task" class="title">
+				已完成
+			</div>
+			<div id="taskUl" class="mui-card" style="margin-bottom: 35px;">
+				<ul  class="mui-table-view test01">
+					<li id="taskSuccess" class="mui-table-view-cell">
+						<a class="mui-navigate-right">
+							任务成功
+						</a>
+					</li>
+					<li id="taskFail" class="mui-table-view-cell">
+						<a class="mui-navigate-right">
+							任务失败
+						</a>
+					</li>
+					<li id="datatest"  class="mui-table-view-cell">
+						<a class="mui-navigate-right">
+							数据测试用
+						</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</body>
+	<script src="js/mui.min.js"></script>
+	<script src="js/app.js"></script>
+	<script>
+		(function($) {
+			mui.init({
+				swipeBack:false //启用右滑关闭功能
+			});
+			mui(".mui-table-view").on('tap','.mui-table-view-cell',function(){
+			    //获取li的id
+				var liId = this.getAttribute("id");
+				mui.openWindow({
+				    id:"task-main-list",
+				    url:"task/task-main-list.html",
+				    extras:{
+					       liId:liId,
+					    }
+				  });
+			});
+			var state = app.getState();
+			empType = state.empTypeId;
+			if(empType.match("01\\d{2}")){
+					//普通用户
+					document.getElementById('repair').style.display = "none";
+					document.getElementById('repairUl').style.display = "none";
+				}else if(empType.match("3004")){
+					//审核人员
+					document.getElementById('repair').style.display = "none";
+					document.getElementById('repairUl').style.display = "none";
+				}else if(empType.match("3003")){
+					//维修管理
+					document.getElementById('report').style.display = "none";
+					document.getElementById('reportUl').style.display = "none";
+				}else if(empType.match("3005")){
+					//维修工作
+					document.getElementById('toCreate').style.display = "none";
+					document.getElementById('report').style.display = "none";
+					document.getElementById('reportUl').style.display = "none";
+				}else if(empType.match("3001")){
+					//管理员
+					
+				}
+		})(mui);
+		/*
+		var state = app.getState();
+		empType = state.empTypeId;
+		 if(empType.match("01\\d{2}")){
+					//普通用户
+					
+				}else if(empType.match("3004")){
+					//审核人员
+					
+				}else if(empType.match("3003")){
+					//维修管理
+					
+				}else if(empType.match("3005")){
+					//维修工作
+					
+				}else if(empType.match("3001")){
+					//管理员
+					
+				}*/
+		</script>
+</html>

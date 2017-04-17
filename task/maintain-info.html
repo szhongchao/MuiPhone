@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<!--标准mui.css-->
+		<link rel="stylesheet" href="../css/mui.min.css">
+		<!--App自定义的css-->
+		<!--<link rel="stylesheet" type="text/css" href="../css/app.css"/>-->
+		<link href="../css/mui.picker.css" rel="stylesheet" />
+		<link href="../css/mui.poppicker.css" rel="stylesheet" />
+		<style>
+		 	.mui-content-padded {
+				padding: 10px;
+			}
+			body,body .mui-content {
+				background-color: #fff !important;
+			}
+			code {
+				word-wrap: break-word;
+				word-break: normal;
+				font-size: 90%;
+				color: #c7254e;
+				background-color: #f9f2f4;
+				border-radius: 4px;
+			}
+			.mui-btn {
+				font-size: 16px;
+				padding: 8px;
+				margin: 3px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 id="report-title" class="mui-title">详细信息</h1>
+		</header>
+		<div class="mui-content">
+			<div class="mui-content-padded" style="padding-bottom: 50px;">
+
+				<form class="mui-input-group">
+					<div class="mui-input-row">
+						<label>车辆编号:</label>
+						<input id="carNum" type="text" class="mui-input-clear" placeholder="请输入车辆编号"editable="false">
+					</div>
+
+					<div class="mui-input-row">
+						<label>服务点号:</label>
+						<input id="rentNetId" type="text" class="mui-input-clear" placeholder="请输入服务点编号"editable="false">
+					</div>
+					<div class="mui-input-row">
+						<label>锁装编号:</label>
+						<input id="rentNum" type="text" class="mui-input-clear" placeholder="请输入锁装编号"editable="false">
+					</div>
+					<div class="mui-input-row">
+						<label>维修员工:</label>
+						<input id="repairEmp" type="text" class="mui-input-clear" placeholder="请输入锁装编号"editable="false">
+					</div>
+				</form>
+				<div class="mui-input-row" style="margin: 10px 5px;">
+					<textarea id="textarea" rows="5" placeholder="请输入问题描述"></textarea>
+				</div>
+			</div>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script src="../js/mui.picker.js"></script>
+		<script src="../js/mui.poppicker.js"></script>
+		<script type="text/javascript" src="../js/common-base.js" ></script>
+		<script>
+			(function($) {
+				$.init({
+					swipeBack:true //启用右滑关闭功能
+				});
+				
+				var network = true;
+				var singleCarInfoAjax = function(reportId){
+					url = baseUrl+'maintain/singleCarInfo.action?reportId='+ reportId;
+					$.getJSON(url, function(response) {
+							document.getElementById("carNum").value = response.carNum;
+							document.getElementById("rentNetId").value = response.rentNetId;
+							document.getElementById("rentNum").value = response.rentNum;
+							document.getElementById("textarea").value = response.carFaultDesc;
+						}
+					);
+				}
+				var editAjax = function(carNum,message,requType){
+					
+					url =baseUrl+ 'repair/editRepairInfo.action?repairInfo.reportId='+reportId+
+															  '&requType='+requType;
+					$.getJSON(url, function(response) {
+							 if(response.resultInfo != null && response.resultInfo.type =='1'){
+							 	$.init({
+									beforeback: function(){
+										//获得列表界面的webview
+										var list = plus.webview.getWebviewById('task-list');
+										//触发列表界面的自定义事件（refresh）,从而进行数据刷新
+										alert(message);
+										$.fire(list,'refreshReportList');
+										//返回true，继续页面关闭逻辑
+										return true;
+									}
+								});
+							 $.back()
+							 }else if(response.resultInfo != null && response.resultInfo.type =='0'){
+							 	$.alert("数据请求失败");
+							 }
+						}
+					);
+				}
+				var submitFun = function(message,requType){
+					if(network){
+						var carNum = document.getElementById("carNum").value
+						editAjax(carNum,message,requType);
+					}else{
+						$.toast("当前网络不给力，请稍后再试");
+					}
+				}
+				if($.os.plus){
+					$.plusReady(function () {
+						if(plus.networkinfo.getCurrentType()==plus.networkinfo.CONNECTION_NONE){
+							network = false;
+						}
+					});
+				}
+				if(network){
+						//如果网络通首先加载的
+						$.plusReady(function(){
+						var self = plus.webview.currentWebview();
+						var loginState = app.getState();
+						reportId = self.reportId;
+						state = self.state;
+						empType = loginState.empTypeId;
+						var table = document.body.querySelector('.mui-content-padded');
+						var reportTitle= document.getElementById("report-title");
+						var div = document.createElement('div');
+						div.className = 'mui-button-row';
+						if(empType.match("3003")){
+							//维修管理员 
+							reportTitle.innerHTML = "任务详情";
+							if("2406"){
+								//维修成功
+								div.innerHTML ='<button type="button" id="createOK" class="mui-btn mui-btn-primary">任务完成</button>&nbsp;&nbsp;';
+								table.appendChild(div);
+								
+								document.getElementById("createOK").addEventListener('tap', function() {
+									submitFun("任务完成","24081");
+								});
+								
+							}else if("2407"){
+								//维修失败
+								div.innerHTML ='<button type="button" id="createCancel" class="mui-btn mui-btn-primary">任务失败</button>&nbsp;&nbsp;';
+								table.appendChild(div);
+								
+								document.getElementById("createCancel").addEventListener('tap', function() {
+									submitFun("任务失败","24082");
+								});
+								
+							}else if(state=="2402"){
+								//创建维修工作
+								
+							}
+						}else if(empType.match("3005")){//维修员工
+							//查看维修任务
+							if(state=="2404"){
+								reportTitle.innerHTML = "维修任务";
+								div.innerHTML =[
+											'<button type="button" id="confirmOK" class="mui-btn mui-btn-primary">接受任务</button>&nbsp;&nbsp;&nbsp;&nbsp;',
+											'<button type="button" id="confirmCancel" class="mui-btn mui-btn-warning mui-btn-primary">拒绝任务</button>'
+											].join('');
+								table.appendChild(div);
+								document.getElementById("confirmOK").addEventListener('tap', function() {
+									
+									submitFun("接受任务","2409");
+								});
+								document.getElementById("confirmCancel").addEventListener('tap', function() {
+									submitFun("拒绝任务","2402");
+								});
+							}else if(state=="2409"){
+								reportTitle.innerHTML = "我的任务";
+								div.innerHTML ='<button type="button" id="confirmOK" class="mui-btn mui-btn-primary">开始维修</button>&nbsp;&nbsp;&nbsp;&nbsp;';
+								table.appendChild(div);
+								
+								document.getElementById("confirmOK").addEventListener('tap', function() {
+									submitFun("开始成功","2405");
+								});
+							}else if(state=="2405"){
+								reportTitle.innerHTML = "任务进行中";
+								div.innerHTML =[
+											'<button type="button" id="confirmOK" class="mui-btn mui-btn-primary">维修成功</button>&nbsp;&nbsp;&nbsp;&nbsp;',
+											'<button type="button" id="confirmCancel" class="mui-btn mui-btn-warning mui-btn-primary">维修失败</button>'
+											].join('');
+								table.appendChild(div);
+								document.getElementById("confirmOK").addEventListener('tap', function() {
+									submitFun("维修成功","2406");
+								});
+								document.getElementById("confirmCancel").addEventListener('tap', function() {
+									submitFun("维修失败","2407");
+								});
+							}
+						}else if(empType.match("3001")){
+							//管理员
+							
+						}
+						singleCarInfoAjax(reportId);
+						repairEmp();
+						});				
+				}else{
+					$.toast("当前网络不给力，请稍后再试");
+				}
+			})(mui);
+		</script>
+	</body>
+
+</html>

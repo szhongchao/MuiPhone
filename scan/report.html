@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>Hello MUI</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<!--标准mui.css-->
+		<link rel="stylesheet" href="../css/mui.min.css">
+		<!--App自定义的css-->
+		<!--<link rel="stylesheet" type="text/css" href="../css/app.css"/>-->
+		<style>
+		 	.mui-content-padded {
+				padding: 10px;
+			}
+			body,body .mui-content {
+				background-color: #fff !important;
+			}
+			code {
+				word-wrap: break-word;
+				word-break: normal;
+				font-size: 90%;
+				color: #c7254e;
+				background-color: #f9f2f4;
+				border-radius: 4px;
+			}
+			button, .mui-btn-warning {
+				margin-top: 10px;
+				margin-left: 50px;
+			}
+			button, .mui-btn-success {
+				margin-top: 10px;
+				margin-right: 10px;
+			}
+			
+			
+			.mui-popover {
+				height: 310px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">详细信息</h1>
+		</header>
+		<div class="mui-content">
+			<div class="mui-content-padded" style="padding-bottom: 50px;">
+				<div class="mui-input-group">
+					
+					<div class="mui-input-row">
+						<label>车辆编号:</label>
+						<input id="carNum" type="text" class="mui-input-clear" placeholder="请输入车辆编号"editable="false">
+					</div>
+
+					<div class="mui-input-row">
+						<label>服务点号:</label>
+						<input id="rentNetId" type="text" class="mui-input-clear" placeholder="请输入服务点编号"editable="false">
+					</div>
+					<div class="mui-input-row">
+						<label>锁装编号:</label>
+						<input id="rentNum" type="text" class="mui-input-clear" placeholder="请输入锁装编号"editable="false">
+					</div>
+				</div>
+				<div class="mui-input-row" style="margin: 10px 5px;">
+					<textarea id="textarea1" rows="5" placeholder="此处显示用户评价信息"></textarea>
+				</div>
+				<ul class="mui-table-view-chevron">
+					<li class="mui-table-view-cell mui-media">
+						<img class="mui-media-object head-img" id="head-img" src="../images/logohead.ico" height="100" width="100">
+					</li>
+				</ul>
+				<div class="mui-button-row">
+					<a  href="#middlePopover" class="mui-btn mui-btn-warning " style="padding: 5px 10px;">报修</a>
+					<button  type="button" id="confirmRent" class="mui-btn mui-btn-primary">租车</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				</div>
+				<div id="middlePopover" class="mui-popover">
+					<h5 class="mui-content-padded">故障详情</h5>
+					<div class="mui-card">
+						<form class="mui-input-group">
+							<div class="mui-input-row mui-checkbox">
+								<label>无法租、还车</label>
+								<input name="checkbox1" value="Item 1" type="checkbox" >
+							</div>
+							<div class="mui-input-row mui-checkbox">
+								<label>刹车、车把、车座</label>
+								<input name="checkbox1" value="Item 2" type="checkbox" >
+							</div>
+							<div class="mui-input-row mui-checkbox">
+								<label>车胎、车圈、车链</label>
+								<input name="checkbox1" value="Item 3" type="checkbox">
+							</div>
+							<div class="mui-input-row mui-checkbox">
+								<label>车架、车篮、挡泥瓦</label>
+								<input name="checkbox1" value="Item 4" type="checkbox">
+							</div>
+							<div class="mui-input-row">
+								<input id="faultDes" type="text" class="mui-input-clear" placeholder="请输入故障信息"editable="false">
+							</div>
+						</form>
+					</div>
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<button id="confirmReport" type="button" class="mui-btn mui-btn-warning mui-btn-outlined">
+						确定
+					</button>
+				</div>
+				
+			</div>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/common-base.js"></script>
+		<script>
+			(function($) {
+				$.init({
+					swipeBack:false //关闭右滑关闭功能
+				});
+				var network = true;
+				var singleCarInfoAjax = function(carNum){
+					url = baseUrl+'report/reportCarInfo.action?carNum='+ carNum;
+					$.getJSON(url, function(response) {
+							document.getElementById("carNum").value = response.carNum;
+							document.getElementById("rentNetId").value = response.rentNetid;
+							document.getElementById("rentNum").value = response.rentNum;
+						}
+					);
+				}
+				var reportAjax = function(carNum,rentNetId,rentNum,carFaultDesc){
+					url = baseUrl+'report/addreportsubmit.action?carNum='+carNum+
+																		'&rentNetId='+rentNetId+
+																		  '&rentNum='+rentNum+
+	                                                                  '&carFaultDesc='+encodeURI(encodeURI(carFaultDesc));
+					$.getJSON(url, function(response) {
+							 if(response.resultInfo != null && response.resultInfo.type =='1'){
+							 	mui.alert("谢谢您的反馈,报修成功");
+							 	//关闭当前页面
+							 	var ws=plus.webview.currentWebview();
+                                 plus.webview.close(ws);
+							 }else if(response.resultInfo != null && response.resultInfo.type =='0'){
+							 	mui.alert("error");
+							 }
+						}
+					);
+				}
+				if(mui.os.plus){
+					mui.plusReady(function () {
+						if(plus.networkinfo.getCurrentType()==plus.networkinfo.CONNECTION_NONE){
+							network = false;
+						}
+					});
+				}
+				if(network){
+						mui.plusReady(function(){
+						var self = plus.webview.currentWebview();
+						var carNumMain = self.carNum;
+						singleCarInfoAjax(carNumMain);
+					});				
+				}else{
+					mui.toast("当前网络不给力，请稍后再试");
+				}
+				document.getElementById("confirmRent").addEventListener('tap', function() {
+					if(network){
+						mui.alert("租车成功!")
+					}else{
+						mui.toast("当前网络不给力，请稍后再试");
+					}
+				});
+				document.getElementById("confirmReport").addEventListener('tap', function() {
+					if(network){
+						var carNum = document.getElementById("carNum").value
+						var rentNetId = document.getElementById("rentNetId").value
+						var rentNum = document.getElementById("rentNum").value
+						var carFaultDesc  = document.getElementById("faultDes").value
+						if(carFaultDesc == null ||carFaultDesc ==""){
+			  				mui.alert("请输入故障信息！");
+			  				return;
+						}
+						reportAjax(carNum,rentNetId,rentNum,carFaultDesc);
+					}else{
+						mui.toast("当前网络不给力，请稍后再试");
+					}
+				});
+			})(mui);
+		</script>
+	</body>
+
+</html>

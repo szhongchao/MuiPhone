@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<!--标准mui.css-->
+		<link rel="stylesheet" href="../css/mui.min.css">
+		<!--App自定义的css-->
+		<!--<link rel="stylesheet" type="text/css" href="../css/app.css"/>-->
+		<style>
+		 	.mui-content-padded {
+				padding: 10px;
+			}
+			body,body .mui-content {
+				background-color: #fff !important;
+			}
+			code {
+				word-wrap: break-word;
+				word-break: normal;
+				font-size: 90%;
+				color: #c7254e;
+				background-color: #f9f2f4;
+				border-radius: 4px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 id="report-title" class="mui-title">详细信息</h1>
+		</header>
+		<div class="mui-content">
+			<div class="mui-content-padded" style="padding-bottom: 50px;">
+
+				<form class="mui-input-group">
+					<div class="mui-input-row">
+						<label>车辆编号:</label>
+						<input id="carNum" type="text" class="mui-input-clear" placeholder="请输入车辆编号"editable="false">
+					</div>
+
+					<div class="mui-input-row">
+						<label>服务点号:</label>
+						<input id="rentNetId" type="text" class="mui-input-clear" placeholder="请输入服务点编号"editable="false">
+					</div>
+					<div class="mui-input-row">
+						<label>锁装编号:</label>
+						<input id="rentNum" type="text" class="mui-input-clear" placeholder="请输入锁装编号"editable="false">
+					</div>
+					
+				</form>
+				<div class="mui-input-row" style="margin: 10px 5px;">
+					<textarea id="textarea" rows="5" placeholder="请输入问题描述"></textarea>
+				</div>
+				
+				<!--<div class="mui-button-row">
+					
+				</div>-->
+				
+			</div>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script type="text/javascript" src="../js/common-base.js" ></script>
+		<script>
+			(function($) {
+				$.init({
+					swipeBack:true //启用右滑关闭功能
+				});
+				var network = true;
+				var singleCarInfoAjax = function(reportId){
+					url = baseUrl+'report/singleCarInfo.action?reportId=';
+					$.getJSON(url + reportId, function(response) {
+							document.getElementById("carNum").value = response.carNum;
+							document.getElementById("rentNetId").value = response.rentNetId;
+							document.getElementById("rentNum").value = response.rentNum;
+							document.getElementById("textarea").value = response.carFaultDesc;
+						}
+					);
+				}
+				var editAjax = function(carNum,carFaultDesc,message,requType){
+					url =baseUrl+ 'report/editReportInfo.action?reportInfo.reportId='+reportId+
+															  '&reportInfo.carFaultDesc='+encodeURI(encodeURI(carFaultDesc))+
+															  '&requType='+requType;
+					$.getJSON(url, function(response) {
+							 if(response.resultInfo != null && response.resultInfo.type =='1'){
+							 	/*mui.alert(message)
+							 	mui.back()*/
+							 	$.init({
+									beforeback: function(){
+										//获得列表界面的webview
+										var list = plus.webview.getWebviewById('task-list');
+										//触发列表界面的自定义事件（refresh）,从而进行数据刷新
+										alert(message);
+										$.fire(list,'refreshReportList');
+										//返回true，继续页面关闭逻辑
+										return true;
+									}
+								});
+							 $.back()
+							 }else if(response.resultInfo != null && response.resultInfo.type =='0'){
+							 	$.alert("数据请求失败");
+							 }
+						}
+					);
+				}
+				
+				var submitFun = function(message,requType){
+					if(network){
+						var carNum = document.getElementById("carNum").value
+						var carFaultDesc  = document.getElementById("textarea").value
+						if(carFaultDesc == null ||carFaultDesc ==""){
+			  				$.alert("请输入故障信息！");
+			  				return;
+						}
+						editAjax(carNum,carFaultDesc,message,requType);
+					}else{
+						$.toast("当前网络不给力，请稍后再试");
+					}
+				}
+				if($.os.plus){
+					$.plusReady(function () {
+						if(plus.networkinfo.getCurrentType()==plus.networkinfo.CONNECTION_NONE){
+							network = false;
+						}
+					});
+				}
+				if(network){
+						$.plusReady(function(){
+						var self = plus.webview.currentWebview();
+						var loginState = app.getState();
+						reportId = self.reportId;
+						state = self.state;
+						empType = loginState.empTypeId;
+						var table = document.body.querySelector('.mui-content-padded');
+						var reportTitle= document.getElementById("report-title");
+						var div = document.createElement('div');
+						div.className = 'mui-button-row';
+						if(empType.match("01\\d{2}")){
+							//普通用户
+							if(state=="2401"){
+								reportTitle.innerHTML = "修改报修信息";
+								div.innerHTML ='<button type="button" id="confirm" class="mui-btn mui-btn-primary">确认修改</button>&nbsp;&nbsp;';
+								table.appendChild(div);
+								document.getElementById("confirm").addEventListener('tap', function() {
+									submitFun("修改成功","2401");
+								});
+							}else if(state=="2402"){
+								reportTitle.innerHTML = "查看审核信息";
+							}else if(state=="2403"){
+								reportTitle.innerHTML = "查看未通过审核";
+								//用户进一步处理
+							}
+						}else if(empType=="3004" && state !="2404"){
+							//审核人员
+							reportTitle.innerHTML = "修改报修信息";
+							div.innerHTML =[
+										'<button type="button" id="confirmOK" class="mui-btn mui-btn-primary">审核通过</button>&nbsp;&nbsp;&nbsp;&nbsp;',
+										'<button type="button" id="confirmCancel" class="mui-btn mui-btn-warning mui-btn-primary">用户误报</button>'
+										].join('');
+							table.appendChild(div);
+							document.getElementById("confirmOK").addEventListener('tap', function() {
+								submitFun("审核通过","2402");
+							});
+							document.getElementById("confirmCancel").addEventListener('tap', function() {
+								submitFun("拒绝报修","2403");
+							});
+						}else if(empType.match("3001")){
+							//管理员
+							
+						}
+						singleCarInfoAjax(reportId);
+						});				
+				}else{
+					$.toast("当前网络不给力，请稍后再试");
+				}
+			})(mui);
+		</script>
+	</body>
+
+</html>

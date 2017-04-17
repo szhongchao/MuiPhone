@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+		<title>Hello MUI</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<!--标准mui.css-->
+		<link rel="stylesheet" href="../css/mui.min.css">
+		<!--App自定义的css-->
+		<!--<link rel="stylesheet" type="text/css" href="../css/app.css"/>-->
+		<style>
+		 	.mui-content-padded {
+				padding: 10px;
+			}
+			body,body .mui-content {
+				background-color: #fff !important;
+			}
+			code {
+				word-wrap: break-word;
+				word-break: normal;
+				font-size: 90%;
+				color: #c7254e;
+				background-color: #f9f2f4;
+				border-radius: 4px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">ajax（网络请求）</h1>
+		</header>
+		<div class="mui-content">
+			<div class="mui-content-padded" style="padding-bottom: 50px;">
+				
+				<div class="mui-input-group">
+					
+					<div class="mui-button-row">
+						<button type="button" id="confirm" class="mui-btn mui-btn-primary">发送请求</button>
+					</div>
+				</div>
+				<h4 class="mui-content-padded">获得响应：</h4>
+				<code id="response"></code>
+			</div>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script type="text/javascript" src="../js/common-base.js" ></script>
+		<script>
+			(function($) {
+				$.init({
+					swipeBack:true //启用右滑关闭功能
+				});
+				
+				var network = true;
+				if(mui.os.plus){
+					mui.plusReady(function () {
+						if(plus.networkinfo.getCurrentType()==plus.networkinfo.CONNECTION_NONE){
+							network = false;
+						}
+					});
+				}
+				
+				var respnoseEl = document.getElementById("response");
+				//成功响应的回调函数
+				var success = function(response) {
+					response = JSON.stringify(response);
+					respnoseEl.innerHTML = response;
+				};
+				
+				var ajax = function() {
+					url = baseUrl+'statistics/rentInfo.action';
+					//url = baseUrl+'report/editReportInfo.action?reportInfo.carFaultDesc='+encodeURI(encodeURI("中文"));
+					respnoseEl.innerHTML = '正在请求中...';
+					$.getJSON(url, success);
+				};
+				//发送请求按钮的点击事件
+				document.getElementById("confirm").addEventListener('tap', function() {
+					if(network){
+						ajax();
+					}else{
+						mui.toast("当前网络不给力，请稍后再试");
+					}
+				});
+				
+			})(mui);
+		</script>
+	</body>
+
+</html>
