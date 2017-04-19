@@ -1,1 +1,208 @@
-null
+{
+  "forget_password.html": {
+    "href": "forget_password.html",
+    "resources": [
+      "css/mui.min.css",
+      "css/style.css",
+      "js/mui.min.js",
+      "js/app.js"
+    ],
+    "refer": [],
+    "priority": 0
+  },
+  "task/ajax.html": {
+    "href": "task/ajax.html",
+    "resources": [
+      "css/mui.min.css",
+      "js/mui.min.js",
+      "js/common-base.js"
+    ],
+    "refer": [],
+    "priority": 0
+  },
+  "task/task-list.html": {
+    "href": "task/task-list.html",
+    "resources": [
+      "css/mui.min.css",
+      "js/mui.min.js",
+      "js/app.js",
+      "js/common-base.js"
+    ],
+    "refer": [],
+    "priority": 0
+  },
+  "task/task-main-list.html": {
+    "href": "task/task-main-list.html",
+    "resources": [
+      "js/mui.min.js",
+      "js/app.js",
+      "css/mui.min.css"
+    ],
+    "refer": [
+      "task/ajax.html",
+      "task/task-list.html"
+    ],
+    "priority": 0
+  },
+  "main-list.html": {
+    "href": "main-list.html",
+    "resources": [
+      "js/mui.min.js",
+      "js/app.js",
+      "css/mui.min.css",
+      "css/app.css"
+    ],
+    "refer": [
+      "task/task-main-list.html"
+    ],
+    "priority": 0
+  },
+  "main-setting.html": {
+    "href": "main-setting.html",
+    "resources": [
+      "js/mui.min.js",
+      "js/mui.view.js",
+      "libs/easymob-webim-sdk/jquery-1.11.1.js",
+      "libs/easymob-webim-sdk/strophe-custom-2.0.0.js",
+      "libs/easymob-webim-sdk/json2.js",
+      "libs/easymob-webim-sdk/easemob.im-1.0.5.js",
+      "js/feedback.js",
+      "js/feedback-page.js",
+      "js/mui.locker.js",
+      "js/app.js",
+      "css/mui.min.css"
+    ],
+    "refer": [
+      "login.html"
+    ],
+    "priority": 0
+  },
+  "plus/doc.html": {
+    "href": "plus/doc.html",
+    "resources": [
+      "js/immersed.js"
+    ],
+    "refer": [],
+    "priority": 0
+  },
+  "scan/barcode_scan.html": {
+    "href": "scan/barcode_scan.html",
+    "resources": [
+      "css/mui.min.css",
+      "js/common.js",
+      "css/common.css"
+    ],
+    "refer": [],
+    "priority": 0
+  },
+  "scan/report.html": {
+    "href": "scan/report.html",
+    "resources": [
+      "css/mui.min.css",
+      "js/mui.min.js",
+      "js/common-base.js",
+      "images/logohead.ico"
+    ],
+    "refer": [],
+    "priority": 0
+  },
+  "scan/maps_map_sub.html": {
+    "href": "scan/maps_map_sub.html",
+    "resources": [
+      "css/common.css",
+      "css/mui.min.css",
+      "js/mui.min.js",
+      "js/app.js",
+      "js/common.js",
+      "js/common-base.js",
+      "js/immersed.js"
+    ],
+    "refer": [
+      "scan/barcode_scan.html",
+      "scan/report.html"
+    ],
+    "priority": 0
+  },
+  "main-webgis.html": {
+    "href": "main-webgis.html",
+    "resources": [
+      "js/immersed.js",
+      "js/common.js",
+      "js/mui.min.js",
+      "js/app.js",
+      "img/blue.png",
+      "css/common.css"
+    ],
+    "refer": [
+      "plus/doc.html",
+      "scan/maps_map_sub.html"
+    ],
+    "priority": 0
+  },
+  "main-msg.html": {
+    "href": "main-msg.html",
+    "resources": [
+      "css/mui.min.css",
+      "js/mui.min.js"
+    ],
+    "refer": [],
+    "priority": 0
+  },
+  "main.html": {
+    "href": "main.html",
+    "resources": [
+      "css/mui.min.css",
+      "js/mui.min.js"
+    ],
+    "refer": [
+      "main-list.html",
+      "main-setting.html",
+      "main-webgis.html",
+      "main-msg.html"
+    ],
+    "priority": 0
+  },
+  "unlock.html": {
+    "href": "unlock.html",
+    "resources": [
+      "css/mui.min.css",
+      "js/mui.min.js",
+      "js/mui.locker.js",
+      "js/app.js"
+    ],
+    "refer": [
+      "login.html",
+      "main.html"
+    ],
+    "priority": 0
+  },
+  "reg.html": {
+    "href": "reg.html",
+    "resources": [
+      "css/mui.min.css",
+      "css/style.css",
+      "js/mui.min.js",
+      "js/app.js"
+    ],
+    "refer": [],
+    "priority": 0
+  },
+  "login.html": {
+    "href": "login.html",
+    "resources": [
+      "css/mui.min.css",
+      "css/style.css",
+      "js/mui.min.js",
+      "js/mui.enterfocus.js",
+      "js/app.js",
+      "images/logohead.ico"
+    ],
+    "refer": [
+      "forget_password.html",
+      "main.html",
+      "unlock.html",
+      "reg.html"
+    ],
+    "priority": 0
+  }
+}
